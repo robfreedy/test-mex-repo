@@ -4,17 +4,14 @@ from prefect import flow, get_run_logger
 def simple_test_flow():
     logger = get_run_logger()
     logger.info("This is a simple test flow.")
-    import socket
-    hostname = socket.gethostname()
-    IPAddr = socket.gethostbyname(hostname)
+    from requests import get
 
-    print("Your Computer Name is:" + hostname)
-    print("Your Computer IP Address is:" + IPAddr)
-    return "Test flow executed successfully."
+    ip = get('https://api.ipify.org').content.decode('utf8')
+    print('My public IP address is: {}'.format(ip))
 
 if __name__ == "__main__":
     flow.from_source(
-        source="s3://test-mex-storage",
+        source="https://github.com/robfreedy/test-mex-repo.git",
         entrypoint="flow.py:simple_test_flow",
     ).deploy(
         name="test-managed-flow",
